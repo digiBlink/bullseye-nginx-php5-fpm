@@ -1,4 +1,4 @@
-FROM debian:jessie
+FROM debian:bullseye
 
 # prevent Debian's PHP packages from being installed
 # https://github.com/docker-library/php/pull/542
@@ -21,7 +21,9 @@ ENV PHPIZE_DEPS \
 		pkg-config \
 		re2c
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install -y \
 		$PHPIZE_DEPS \
 		nginx \
 		ca-certificates \
