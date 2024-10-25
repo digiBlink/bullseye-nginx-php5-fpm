@@ -1,6 +1,6 @@
 # digiblink/bullseye-nginx-php5-fpm Docker Container
 
-Maintained by [digiBlink](http://digiblink.eu) - [docker hub link](https://hub.docker.com/r/digiblink/jessie-nginx-php5-fpm/)
+Maintained by [digiBlink](http://digiblink.eu) - [docker hub link](https://hub.docker.com/r/digiblink/bullseye-nginx-php5-fpm/)
 
 Container with:
 
