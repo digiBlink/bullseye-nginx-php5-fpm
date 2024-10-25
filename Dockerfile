@@ -145,7 +145,7 @@ RUN set -eux; \
 		--enable-zip \
 		--with-curl \
 		--with-libedit \
-		--with-openssl \
+		--with-ssl=/usr/local/ssl \
 		--with-zlib \
 		--with-mysqli \
 		--with-pdo-mysql \
