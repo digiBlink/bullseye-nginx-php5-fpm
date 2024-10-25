@@ -1,13 +1,11 @@
-name: Main Branch CI Image Build
+name: Image Build
 on:
-  push:
-    branches: main
+  workflow_call:
+
 jobs:
   build-image:
     name: Build and push Docker image
     runs-on: ubuntu-latest
-    env:
-      GHCR_PAT: ${{secrets.GHCR_PAT}}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -20,19 +18,26 @@ jobs:
           images: |
             ghcr.io/digiblink/bullseye-nginx-php5-fpm
           tags: |
-            type=sha,prefix=
+            type=sha
+            type=ref,event=tag
+            type=raw,value=latest,enable={{is_default_branch}}
           flavor: |
-            latest=true
-            prefix=
+            latest=auto
+            prefix=,onlatest=false
             suffix=
           labels: |
             org.opencontainers.image.vendor=digiBlink
+            org.opencontainers.image.source=https://github.com/${{ env.REPO_NAME }}
+            org.opencontainers.image.title=Debian based image with latest PHP5 FPM and Nginx
+            org.opencontainers.image.description=Debian based image with latest PHP5 FPM and Nginx
+            org.opencontainers.image.created=${{ steps.time.outputs.time }}
+            org.opencontainers.image.revision=${{ steps.short-sha.outputs.sha }}
       - name: Login to Github Packages
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GHCR_PAT }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build image and push to GitHub Container Registry
         uses: docker/build-push-action@v6
         with:
