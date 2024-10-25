@@ -1,13 +1,13 @@
-# digiblink/jessie-nginx-php5-fpm Docker Container
+# digiblink/bullseye-nginx-php5-fpm Docker Container
 
 Maintained by [digiBlink](http://digiblink.eu) - [docker hub link](https://hub.docker.com/r/digiblink/jessie-nginx-php5-fpm/)
 
 Container with:
 
-* Debian Jessie (default time zone `Europe/Riga`)
-* `nginx` 1.6.2
-* PHP-FPM 5.6.38
-* WP-CLI 2.4.0
+* Debian Bullseye (default time zone `Europe/Riga`)
+* `nginx` 1.18.0
+* PHP-FPM 5.6.40
+* WP-CLI 2.11.0
 * `git`
 
 Based on following containers:

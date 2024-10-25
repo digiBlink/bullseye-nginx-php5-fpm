@@ -1,4 +1,4 @@
-FROM debian:jessie
+FROM debian:bullseye
 
 # prevent Debian's PHP packages from being installed
 # https://github.com/docker-library/php/pull/542
@@ -21,7 +21,9 @@ ENV PHPIZE_DEPS \
 		pkg-config \
 		re2c
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install -y \
 		$PHPIZE_DEPS \
 		nginx \
 		ca-certificates \
@@ -52,9 +54,9 @@ ENV PHP_LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie"
 
 ENV GPG_KEYS 0BD78B5F97500D450838F95DFE857D9A90D90EC1 6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3
 
-ENV PHP_VERSION 5.6.38
-ENV PHP_URL="https://secure.php.net/get/php-5.6.38.tar.xz/from/this/mirror" PHP_ASC_URL="https://secure.php.net/get/php-5.6.38.tar.xz.asc/from/this/mirror"
-ENV PHP_SHA256="c2fac47dc6316bd230f0ea91d8a5498af122fb6a3eb43f796c9ea5f59b04aa1e" PHP_MD5=""
+ENV PHP_VERSION 5.6.40
+ENV PHP_URL="https://secure.php.net/get/php-5.6.40.tar.xz/from/this/mirror" PHP_ASC_URL="https://secure.php.net/get/php-5.6.40.tar.xz.asc/from/this/mirror"
+ENV PHP_SHA256="1369a51eee3995d7fbd1c5342e5cc917760e276d561595b6052b21ace2656d1c" PHP_MD5=""
 
 RUN set -xe; \
 	\
@@ -87,9 +89,7 @@ RUN set -xe; \
 		wget -O php.tar.xz.asc "$PHP_ASC_URL"; \
 		export GNUPGHOME="$(mktemp -d)"; \
 		for key in $GPG_KEYS; do \
-			gpg --keyserver pgp.mit.edu --recv-keys "$key" || \
-			gpg --keyserver keyserver.pgp.com --recv-keys "$key" || \
-			gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key"; \
+			gpg --batch --keyserver keyserver.ubuntu.com --recv-keys "$key"; \
 		done; \
 		gpg --batch --verify php.tar.xz.asc php.tar.xz; \
 		rm -rf "$GNUPGHOME"; \
@@ -145,7 +145,7 @@ RUN set -eux; \
 		--enable-zip \
 		--with-curl \
 		--with-libedit \
-		--with-openssl \
+		--with-ssl=/usr/local/ssl \
 		--with-zlib \
 		--with-mysqli \
 		--with-pdo-mysql \
