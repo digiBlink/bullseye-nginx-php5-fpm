@@ -10,8 +10,7 @@ RUN set -eux; \
 	} > /etc/apt/preferences.d/no-debian-php
 
 # persistent / runtime deps
-ENV PHPIZE_DEPS \
-		autoconf \
+ENV PHPIZE_DEPS="autoconf \
 		dpkg-dev \
 		file \
 		g++ \
@@ -19,7 +18,7 @@ ENV PHPIZE_DEPS \
 		libc-dev \
 		make \
 		pkg-config \
-		re2c
+		re2c"
 
 RUN apt-get update && \
     apt-get upgrade -y && \
@@ -37,10 +36,10 @@ RUN set -x \
 	&& adduser --system --home /DATA --shell /bin/bash --group nginx \
 	&& usermod -G www-data nginx
 
-ENV PHP_INI_DIR /usr/local/etc/php
+ENV PHP_INI_DIR="/usr/local/etc/php"
 RUN mkdir -p $PHP_INI_DIR/conf.d
 
-ENV PHP_EXTRA_CONFIGURE_ARGS --enable-fpm --with-fpm-user=nginx --with-fpm-group=www-data
+ENV PHP_EXTRA_CONFIGURE_ARGS="--enable-fpm --with-fpm-user=nginx --with-fpm-group=www-data"
 
 # Apply stack smash protection to functions using local buffers and alloca()
 # Make PHP's main executable position-independent (improves ASLR security mechanism, and has no performance impact on x86_64)
@@ -52,9 +51,9 @@ ENV PHP_CFLAGS="-fstack-protector-strong -fpic -fpie -O2"
 ENV PHP_CPPFLAGS="$PHP_CFLAGS"
 ENV PHP_LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie"
 
-ENV GPG_KEYS 0BD78B5F97500D450838F95DFE857D9A90D90EC1 6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3
+ENV GPG_KEYS="0BD78B5F97500D450838F95DFE857D9A90D90EC1 6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3"
 
-ENV PHP_VERSION 5.6.40
+ENV PHP_VERSION="5.6.40"
 ENV PHP_URL="https://secure.php.net/get/php-5.6.40.tar.xz/from/this/mirror" PHP_ASC_URL="https://secure.php.net/get/php-5.6.40.tar.xz.asc/from/this/mirror"
 ENV PHP_SHA256="1369a51eee3995d7fbd1c5342e5cc917760e276d561595b6052b21ace2656d1c" PHP_MD5=""
 
@@ -201,7 +200,7 @@ RUN { \
 	} > /usr/local/etc/php/conf.d/opcache-recommended.ini
 
 # Set timezone
-ENV TZ Europe/Riga
+ENV TZ="Europe/Riga"
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 COPY files/docker-php-ext-* /usr/local/bin/
@@ -213,7 +212,7 @@ ENV TERM="xterm" \
     DB_USER=""\
     DB_PASS=""
 
-ENV PATH /DATA/bin:$PATH
+ENV PATH="/DATA/bin:$PATH"
 
 RUN set -ex \
 	&& cd /usr/local/etc \
