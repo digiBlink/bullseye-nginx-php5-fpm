@@ -6,7 +6,9 @@ Container with:
 
 * Debian Bullseye (default time zone `Europe/Riga`)
 * `nginx` 1.18.0
-* PHP-FPM 5.6.40
+* PHP-FPM 5.6.40 (`openssl` extension built against OpenSSL 1.1.1 via a
+  [compatibility patch](files/php-5.6-libssl-1.1-compatibility.patch), since
+  upstream 5.6 predates OpenSSL 1.1)
 * WP-CLI 2.12.0
 * `git`
 
