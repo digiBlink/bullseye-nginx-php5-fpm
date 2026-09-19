@@ -1,4 +1,4 @@
-FROM debian:bullseye-20250224-slim
+FROM debian:bullseye-20260824-slim
 
 # prevent Debian's PHP packages from being installed
 # https://github.com/docker-library/php/pull/542
