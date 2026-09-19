@@ -115,6 +115,7 @@ RUN set -xe; \
 	apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $fetchDeps
 
 COPY files/docker-php-source /usr/local/bin/
+COPY files/php-5.6-libssl-1.1-compatibility.patch /usr/src/
 
 RUN set -eux; \
 	\
@@ -129,6 +130,7 @@ RUN set -eux; \
 		zlib1g-dev \
 		libpng-dev \
 		libjpeg62-turbo-dev \
+		patch \
 		${PHP_EXTRA_BUILD_DEPS:-} \
 	; \
 	rm -rf /var/lib/apt/lists/*; \
@@ -140,6 +142,14 @@ RUN set -eux; \
 	; \
 	docker-php-source extract; \
 	cd /usr/src/php; \
+# PHP 5.6 predates OpenSSL 1.1's opaque structs, so ext/openssl does not
+# compile against bullseye's libssl-dev (1.1.1w) -- it reaches into X509,
+# X509_EXTENSION and EVP_PKEY directly. Without this the build silently
+# produced an image with no openssl extension at all, so PHP's TLS stream
+# wrapper did not work. Patch by zsalab, offered upstream as php-src PR
+# #2667 and declined only because 5.6 was already EOL; vendored here
+# rather than fetched at build time, since the original host is gone.
+	patch -p1 < /usr/src/php-5.6-libssl-1.1-compatibility.patch; \
 	gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)"; \
 	debMultiarch="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)"; \
 # https://bugs.php.net/bug.php?id=74125
@@ -162,7 +172,7 @@ RUN set -eux; \
 		--enable-zip \
 		--with-curl \
 		--with-libedit \
-		--with-ssl=/usr/local/ssl \
+		--with-openssl \
 		--with-zlib \
 		--with-mysqli \
 		--with-pdo-mysql \
