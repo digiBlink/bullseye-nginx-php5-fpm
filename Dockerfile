@@ -1,5 +1,20 @@
 FROM debian:bullseye-20260824-slim
 
+# Debian 11 reached LTS end-of-life on 2026-08-31. deb.debian.org has since
+# pruned the bullseye-security pool while still serving its indexes, so apt
+# resolves package versions it can no longer download (404 on every .deb), and
+# archive.debian.org does not carry bullseye-security at all. Pin every suite
+# to the snapshot matching this base image instead: reproducible, and it still
+# includes the final round of security updates. The snapshot's Release file is
+# past its Valid-Until, hence the apt override.
+RUN set -eux; \
+	{ \
+		echo 'deb http://snapshot.debian.org/archive/debian/20260824T000000Z bullseye main'; \
+		echo 'deb http://snapshot.debian.org/archive/debian-security/20260824T000000Z bullseye-security main'; \
+		echo 'deb http://snapshot.debian.org/archive/debian/20260824T000000Z bullseye-updates main'; \
+	} > /etc/apt/sources.list; \
+	echo 'Acquire::Check-Valid-Until "false";' > /etc/apt/apt.conf.d/10no-check-valid-until
+
 # prevent Debian's PHP packages from being installed
 # https://github.com/docker-library/php/pull/542
 RUN set -eux; \
@@ -54,7 +69,10 @@ ENV PHP_LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie"
 ENV GPG_KEYS="0BD78B5F97500D450838F95DFE857D9A90D90EC1 6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3"
 
 ENV PHP_VERSION="5.6.40"
-ENV PHP_URL="https://secure.php.net/get/php-5.6.40.tar.xz/from/this/mirror" PHP_ASC_URL="https://secure.php.net/get/php-5.6.40.tar.xz.asc/from/this/mirror"
+# secure.php.net now redirects to www.php.net, whose /get/<file>/from/this/mirror
+# endpoint has been retired (404). /distributions/ serves the same tarball --
+# it matches PHP_SHA256 below, which is unchanged.
+ENV PHP_URL="https://www.php.net/distributions/php-5.6.40.tar.xz" PHP_ASC_URL="https://www.php.net/distributions/php-5.6.40.tar.xz.asc"
 ENV PHP_SHA256="1369a51eee3995d7fbd1c5342e5cc917760e276d561595b6052b21ace2656d1c" PHP_MD5=""
 
 RUN set -xe; \
