@@ -291,6 +291,16 @@ RUN chmod +x /run.sh
 
 RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && chmod +x wp-cli.phar && mv wp-cli.phar /usr/bin/wp-cli && chown nginx:nginx /usr/bin/wp-cli
 
+# Create the runtime directories the configs point at. run.sh already does
+# this at startup, but only then -- so "nginx -t" and "php-fpm -t" failed in
+# a fresh container, and any tooling that validates the config before boot
+# saw a broken image. Created before VOLUME so a fresh anonymous/named
+# volume is seeded with them too; run.sh keeps its mkdir for bind mounts,
+# which are never seeded.
+RUN set -eux; \
+	mkdir -p /DATA/htdocs /DATA/logs/nginx /DATA/logs/php-fpm /tmp/nginx; \
+	chown -R nginx:nginx /DATA /tmp/nginx
+
 EXPOSE 80
 
 VOLUME ["/DATA"]
