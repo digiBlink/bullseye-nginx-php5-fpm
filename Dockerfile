@@ -207,8 +207,13 @@ RUN set -eux; \
 # continue - from here
 
 # set recommended PHP.ini settings
-# see https://secure.php.net/manual/en/opcache.installation.php
+# see https://www.php.net/manual/en/opcache.installation.php
+# opcache is a Zend extension, so the settings below do nothing on their own --
+# it has to be loaded with zend_extension. That line was missing, so the image
+# shipped opcache.so built but never loaded, and php.ini's opcache.enable=1 had
+# nothing to act on. The bare filename resolves against extension_dir.
 RUN { \
+		echo 'zend_extension=opcache.so'; \
 		echo 'opcache.memory_consumption=128'; \
 		echo 'opcache.interned_strings_buffer=8'; \
 		echo 'opcache.max_accelerated_files=4000'; \
