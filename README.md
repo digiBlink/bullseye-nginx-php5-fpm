@@ -7,7 +7,7 @@ Container with:
 * Debian Bullseye (default time zone `Europe/Riga`)
 * `nginx` 1.18.0
 * PHP-FPM 5.6.40
-* WP-CLI 2.11.0
+* WP-CLI 2.12.0
 * `git`
 
 Based on following containers:
